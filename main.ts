@@ -6,10 +6,6 @@ import { json, error } from "./request.ts";
 import { webhookSubscription } from "./blocks/webhooks/webhookSubscription.ts";
 import { httpRequest } from "./blocks/request/httpRequest.ts";
 
-function encodePathForUrl(path: string): string {
-  return encodeURIComponent(path);
-}
-
 async function getOrCreateWebhookSecret(): Promise<string> {
   const { value: existing } = await kv.app.get("webhookSecret");
   if (existing) return existing as string;
@@ -64,9 +60,9 @@ function getWebhookApiPath(
 ): string {
   switch (tokenScope) {
     case "project":
-      return `/projects/${encodePathForUrl(projectOrGroupPath!)}/hooks`;
+      return `/projects/${encodeURIComponent(projectOrGroupPath!)}/hooks`;
     case "group":
-      return `/groups/${encodePathForUrl(projectOrGroupPath!)}/hooks`;
+      return `/groups/${encodeURIComponent(projectOrGroupPath!)}/hooks`;
     case "system":
       return "/hooks";
     default:
