@@ -1,9 +1,4 @@
-import {
-  blocks as blocksApi,
-  defineApp,
-  kv,
-  messaging,
-} from "@slflows/sdk/v1";
+import { blocks as blocksApi, defineApp, kv, messaging } from "@slflows/sdk/v1";
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { createGitLabClient } from "./client";
 import { json, error } from "./request.ts";
@@ -97,8 +92,7 @@ To install:
   config: {
     instanceUrl: {
       name: "GitLab Instance URL",
-      description:
-        "Your GitLab instance URL. Leave empty for gitlab.com.",
+      description: "Your GitLab instance URL. Leave empty for gitlab.com.",
       type: "string",
       required: false,
       default: "https://gitlab.com",
@@ -243,7 +237,11 @@ To install:
     }
 
     const resolvedInstanceUrl = instanceUrl || "https://gitlab.com";
-    const client = createGitLabClient({ instanceUrl, accessToken, caCertificate });
+    const client = createGitLabClient({
+      instanceUrl,
+      accessToken,
+      caCertificate,
+    });
 
     // Validate token by fetching current user
     const { data: user } = await client.get<{ username: string }>("/user");
@@ -280,7 +278,9 @@ To install:
       });
     }
 
-    console.log(`[onSync] Ready — user: ${authenticatedUser}, instance: ${resolvedInstanceUrl}`);
+    console.log(
+      `[onSync] Ready — user: ${authenticatedUser}, instance: ${resolvedInstanceUrl}`,
+    );
 
     return {
       newStatus: "ready" as const,
@@ -302,24 +302,22 @@ To install:
       { value: webhookId },
       { value: tokenScope },
       { value: projectOrGroupPath },
-    ] = await kv.app.getMany([
-      "webhookId",
-      "tokenScope",
-      "projectOrGroupPath",
-    ]);
+    ] = await kv.app.getMany(["webhookId", "tokenScope", "projectOrGroupPath"]);
 
     if (webhookId && tokenScope) {
       try {
-        const client = createGitLabClient({ instanceUrl, accessToken, caCertificate });
+        const client = createGitLabClient({
+          instanceUrl,
+          accessToken,
+          caCertificate,
+        });
         const basePath = getWebhookApiPath(
           tokenScope as string,
           projectOrGroupPath as string | undefined,
         );
         await client.delete(`${basePath}/${webhookId}`);
       } catch (err) {
-        console.warn(
-          `Failed to delete webhook: ${(err as Error).message}`,
-        );
+        console.warn(`Failed to delete webhook: ${(err as Error).message}`);
       }
     }
 

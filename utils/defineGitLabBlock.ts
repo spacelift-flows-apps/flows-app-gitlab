@@ -2,11 +2,10 @@ import { AppBlock, AppBlockConfigField, events } from "@slflows/sdk/v1";
 import { createGitLabClient } from "../client";
 import { convertKeysToCamelCase } from "./convertKeysToCamelCase.ts";
 
-interface GitLabBlockInputConfigParams
-  extends Pick<
-    AppBlockConfigField,
-    "name" | "description" | "type" | "required"
-  > {
+interface GitLabBlockInputConfigParams extends Pick<
+  AppBlockConfigField,
+  "name" | "description" | "type" | "required"
+> {
   apiRequestFieldKey?: string;
 }
 
@@ -16,11 +15,10 @@ export function defineGitLabInputConfig(
   return params;
 }
 
-interface GitLabBlockConfigParams
-  extends Pick<
-    AppBlockConfigField,
-    "name" | "description" | "type" | "required"
-  > {
+interface GitLabBlockConfigParams extends Pick<
+  AppBlockConfigField,
+  "name" | "description" | "type" | "required"
+> {
   apiRequestFieldKey?: string;
 }
 
@@ -178,8 +176,9 @@ export function defineGitLabBlock(params: GitLabBlockParams): AppBlock {
                           | "DELETE",
                         body: hasBody ? body : undefined,
                         queryParams,
-                        headers: (params as { headers?: Record<string, string> })
-                          .headers,
+                        headers: (
+                          params as { headers?: Record<string, string> }
+                        ).headers,
                       });
 
                       await events.emit(
