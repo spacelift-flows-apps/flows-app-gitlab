@@ -68,23 +68,24 @@ function makeRequest(
 }
 
 export class GitLabClient {
+  private readonly instanceUrl: string;
   private readonly baseUrl: string;
   private readonly accessToken: string;
   private readonly caCertificate?: string;
 
   constructor(config: GitLabClientConfig) {
-    this.baseUrl = `${config.instanceUrl.replace(/\/+$/, "")}/api/v4`;
+    this.instanceUrl = config.instanceUrl.replace(/\/+$/, "");
+    this.baseUrl = `${this.instanceUrl}/api/v4`;
     this.accessToken = config.accessToken;
     this.caCertificate = config.caCertificate;
   }
 
-  async request<T = unknown>(
+  private buildUrl(
+    base: string,
     path: string,
-    options: GitLabRequestOptions = {},
-  ): Promise<GitLabResponse<T>> {
-    const { method = "GET", body, headers = {}, queryParams } = options;
-
-    let url = `${this.baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
+    queryParams?: Record<string, string | number | boolean | undefined>,
+  ): string {
+    let url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
 
     if (queryParams) {
       const params = new URLSearchParams();
@@ -99,22 +100,33 @@ export class GitLabClient {
       }
     }
 
+    return url;
+  }
+
+  private async executeRequest<T = unknown>(
+    url: string,
+    options: {
+      method: string;
+      body?: Record<string, unknown>;
+      headers?: Record<string, string>;
+    },
+  ): Promise<GitLabResponse<T>> {
     const requestHeaders: Record<string, string> = {
       "PRIVATE-TOKEN": this.accessToken,
       "Content-Type": "application/json",
-      ...headers,
+      ...(options.headers || {}),
     };
 
     const response = await makeRequest(url, {
-      method,
+      method: options.method,
       headers: requestHeaders,
-      body: body ? JSON.stringify(body) : undefined,
+      body: options.body ? JSON.stringify(options.body) : undefined,
       ca: this.caCertificate,
     });
 
     if (response.status < 200 || response.status >= 300) {
       throw new Error(
-        `GitLab API error (${response.status} ${response.statusText}) for ${method} ${url}: ${response.body}`,
+        `GitLab API error (${response.status} ${response.statusText}) for ${options.method} ${url}: ${response.body}`,
       );
     }
 
@@ -127,6 +139,32 @@ export class GitLabClient {
     }
 
     return { data, status: response.status, headers: response.headers };
+  }
+
+  async request<T = unknown>(
+    path: string,
+    options: GitLabRequestOptions = {},
+  ): Promise<GitLabResponse<T>> {
+    const { method = "GET", body, headers = {}, queryParams } = options;
+
+    const url = this.buildUrl(this.baseUrl, path, queryParams);
+
+    return this.executeRequest<T>(url, { method, body, headers });
+  }
+
+  /**
+   * Make a request relative to the instance root URL (no /api/v4 prefix).
+   * Use this for endpoints outside the v4 API, e.g. /api/graphql.
+   */
+  async requestRaw<T = unknown>(
+    path: string,
+    options: GitLabRequestOptions = {},
+  ): Promise<GitLabResponse<T>> {
+    const { method = "GET", body, headers = {}, queryParams } = options;
+
+    const url = this.buildUrl(this.instanceUrl, path, queryParams);
+
+    return this.executeRequest<T>(url, { method, body, headers });
   }
 
   async get<T = unknown>(

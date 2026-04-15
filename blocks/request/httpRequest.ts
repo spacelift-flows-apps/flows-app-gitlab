@@ -18,7 +18,7 @@ const method = defineGitLabInputConfig({
 const path = defineGitLabInputConfig({
   name: "Path",
   description:
-    'The API path relative to /api/v4 (e.g., "/projects/123/issues")',
+    'The API path relative to the instance URL (e.g., "/api/v4/projects/123/issues" or "/api/graphql")',
   type: "string",
   required: true,
 });
@@ -46,7 +46,7 @@ const queryParams = defineGitLabInputConfig({
 export const httpRequest = defineGitLabBlock({
   name: "HTTP Request",
   description:
-    "Make a direct request to the GitLab REST API v4. Use this as an escape hatch for any endpoint not covered by dedicated blocks.",
+    "Make a direct request to the GitLab API. Use this as an escape hatch for any endpoint not covered by dedicated blocks.",
   category: "Request",
   inputConfig: {
     method,
@@ -76,7 +76,7 @@ export const httpRequest = defineGitLabBlock({
       },
     );
 
-    const { data } = await client.request(pathValue, {
+    const { data } = await client.requestRaw(pathValue, {
       method: methodValue as "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
       body: bodyValue,
       queryParams: queryParamsValue,
