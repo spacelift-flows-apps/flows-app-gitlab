@@ -36,8 +36,7 @@ export const webhookSubscription = defineGitLabBlock({
     },
     eventType: {
       name: "Event Type",
-      description:
-        "Filter by GitLab event type. Leave empty for all events.",
+      description: "Filter by GitLab event type. Leave empty for all events.",
       type: "string",
       required: false,
       suggestValues: async (input) => {
@@ -63,9 +62,7 @@ export const webhookSubscription = defineGitLabBlock({
         let values = allEventTypes.map((e) => ({ label: e, value: e }));
         if (input.searchPhrase) {
           const lower = input.searchPhrase.toLowerCase();
-          values = values.filter((v) =>
-            v.label.toLowerCase().includes(lower),
-          );
+          values = values.filter((v) => v.label.toLowerCase().includes(lower));
         }
         return { suggestedValues: values };
       },
