@@ -17,7 +17,7 @@ export function defineGitLabInputConfig(
 
 interface GitLabBlockConfigParams extends Pick<
   AppBlockConfigField,
-  "name" | "description" | "type" | "required"
+  "name" | "description" | "type" | "required" | "suggestValues"
 > {
   apiRequestFieldKey?: string;
 }
@@ -39,6 +39,7 @@ function mapBlockConfig(
         description: value.description,
         type: value.type,
         required: value.required,
+        ...(value.suggestValues ? { suggestValues: value.suggestValues } : {}),
       },
     ]),
   );

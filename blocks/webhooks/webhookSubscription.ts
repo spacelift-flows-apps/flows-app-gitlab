@@ -37,9 +37,38 @@ export const webhookSubscription = defineGitLabBlock({
     eventType: {
       name: "Event Type",
       description:
-        "Filter by GitLab event type (e.g., 'Push Hook', 'Issue Hook', 'Merge Request Hook'). Leave empty for all events.",
+        "Filter by GitLab event type. Leave empty for all events.",
       type: "string",
       required: false,
+      suggestValues: async (input) => {
+        const allEventTypes = [
+          "Push Hook",
+          "Tag Push Hook",
+          "Issue Hook",
+          "Confidential Issue Hook",
+          "Note Hook",
+          "Confidential Note Hook",
+          "Merge Request Hook",
+          "Job Hook",
+          "Pipeline Hook",
+          "Wiki Page Hook",
+          "Deployment Hook",
+          "Release Hook",
+          "Emoji Hook",
+          "Feature Flag Hook",
+          "Member Hook",
+          "Subgroup Hook",
+          "Project Hook",
+        ];
+        let values = allEventTypes.map((e) => ({ label: e, value: e }));
+        if (input.searchPhrase) {
+          const lower = input.searchPhrase.toLowerCase();
+          values = values.filter((v) =>
+            v.label.toLowerCase().includes(lower),
+          );
+        }
+        return { suggestedValues: values };
+      },
     },
   },
   onInternalMessage: async (input) => {
