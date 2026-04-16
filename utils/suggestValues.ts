@@ -124,6 +124,56 @@ export function suggestIssues() {
   };
 }
 
+export const fetchMergeRequests = memoizee(
+  async (config: AppConfig, projectId: string) => {
+    const client = getClient(config);
+    const { data } = await client.get<
+      Array<{
+        iid: number;
+        title: string;
+        state: string;
+        source_branch: string;
+      }>
+    >(`/projects/${encodeURIComponent(projectId)}/merge_requests`, {
+      per_page: "100",
+      state: "opened",
+    });
+    return data;
+  },
+  {
+    maxAge: 60000,
+    promise: true,
+    length: 2,
+    normalizer: (args) => `${args[0].instanceUrl}:${args[1]}`,
+  },
+);
+
+export function suggestMergeRequests() {
+  return async (input: any) => {
+    const projectId = input.staticInputConfig?.projectId as string | undefined;
+    if (!projectId) {
+      return {
+        suggestedValues: [],
+        message: "Configure Project to receive merge request suggestions.",
+      };
+    }
+    const data = await fetchMergeRequests(
+      input.app.config as AppConfig,
+      projectId,
+    );
+    let values = data.map((mr) => ({
+      label: `!${mr.iid} — ${mr.title}`,
+      value: mr.iid,
+      description: `${mr.source_branch} (${mr.state})`,
+    }));
+    if (input.searchPhrase) {
+      const lower = input.searchPhrase.toLowerCase();
+      values = values.filter((v) => v.label.toLowerCase().includes(lower));
+    }
+    return { suggestedValues: values.slice(0, 50) };
+  };
+}
+
 export const fetchGroupProjects = memoizee(
   async (config: AppConfig, groupPath: string) => {
     const client = getClient(config);

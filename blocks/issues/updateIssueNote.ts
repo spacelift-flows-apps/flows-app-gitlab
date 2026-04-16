@@ -1,6 +1,6 @@
 import { defineGitLabBlock } from "../../utils/defineGitLabBlock.ts";
-import { projectId, issueIid, noteId } from "../shared.ts";
-import { noteBody, noteSchema } from "./shared.ts";
+import { projectId, issueIid, noteId, noteSchema } from "../shared.ts";
+import { noteBody } from "./shared.ts";
 
 export const updateIssueNote = defineGitLabBlock({
   name: "Update Issue Note",

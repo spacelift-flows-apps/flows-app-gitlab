@@ -9,6 +9,15 @@ import { createIssueNote } from "./issues/createIssueNote.ts";
 import { updateIssueNote } from "./issues/updateIssueNote.ts";
 import { deleteIssueNote } from "./issues/deleteIssueNote.ts";
 
+import { listMergeRequests } from "./mergeRequests/listMergeRequests.ts";
+import { getMergeRequest } from "./mergeRequests/getMergeRequest.ts";
+import { createMergeRequest } from "./mergeRequests/createMergeRequest.ts";
+import { updateMergeRequest } from "./mergeRequests/updateMergeRequest.ts";
+import { mergeMergeRequest } from "./mergeRequests/mergeMergeRequest.ts";
+import { getMergeRequestChanges } from "./mergeRequests/getMergeRequestChanges.ts";
+import { createMergeRequestNote } from "./mergeRequests/createMergeRequestNote.ts";
+import { approveMergeRequest } from "./mergeRequests/approveMergeRequest.ts";
+
 export const blocks = {
   webhookSubscription,
   httpRequest,
@@ -20,4 +29,13 @@ export const blocks = {
   createIssueNote,
   updateIssueNote,
   deleteIssueNote,
+
+  listMergeRequests,
+  getMergeRequest,
+  createMergeRequest,
+  updateMergeRequest,
+  mergeMergeRequest,
+  getMergeRequestChanges,
+  createMergeRequestNote,
+  approveMergeRequest,
 } as const;

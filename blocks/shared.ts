@@ -1,5 +1,9 @@
 import { defineGitLabInputConfig } from "../utils/defineGitLabBlock.ts";
-import { suggestProjects, suggestIssues } from "../utils/suggestValues.ts";
+import {
+  suggestProjects,
+  suggestIssues,
+  suggestMergeRequests,
+} from "../utils/suggestValues.ts";
 
 export const projectId = defineGitLabInputConfig({
   name: "Project",
@@ -29,11 +33,12 @@ export const issueIid = defineGitLabInputConfig({
 });
 
 export const mergeRequestIid = defineGitLabInputConfig({
-  name: "Merge Request IID",
+  name: "Merge Request",
   description: "The internal ID of the merge request within the project",
   type: "number",
   required: true,
   apiRequestFieldKey: "merge_request_iid",
+  suggestValues: suggestMergeRequests(),
 });
 
 export const noteId = defineGitLabInputConfig({
@@ -99,3 +104,82 @@ export const labels = defineGitLabInputConfig({
   required: false,
   apiRequestFieldKey: "labels",
 });
+
+// Shared output schemas
+
+export const userSchema = {
+  type: "object" as const,
+  properties: {
+    id: { type: "number" as const },
+    username: { type: "string" as const },
+    name: { type: "string" as const },
+    state: { type: "string" as const },
+    locked: { type: "boolean" as const },
+    avatarUrl: { type: "string" as const },
+    webUrl: { type: "string" as const },
+    publicEmail: { type: "string" as const },
+  },
+  additionalProperties: true,
+};
+
+export const milestoneSchema = {
+  type: "object" as const,
+  properties: {
+    id: { type: "number" as const },
+    iid: { type: "number" as const },
+    title: { type: "string" as const },
+    description: { type: "string" as const },
+    state: { type: "string" as const },
+    dueDate: { type: "string" as const },
+  },
+  additionalProperties: true,
+};
+
+export const noteSchema = {
+  type: "object" as const,
+  properties: {
+    id: { type: "number" as const },
+    body: { type: "string" as const },
+    author: userSchema,
+    createdAt: { type: "string" as const },
+    updatedAt: { type: "string" as const },
+    system: { type: "boolean" as const },
+    noteableId: { type: "number" as const },
+    noteableType: { type: "string" as const },
+    noteableIid: { type: "number" as const },
+    internal: { type: "boolean" as const },
+    confidential: { type: "boolean" as const },
+  },
+  required: ["id", "body", "author", "createdAt", "updatedAt"],
+  additionalProperties: true,
+};
+
+export const referencesSchema = {
+  type: "object" as const,
+  properties: {
+    short: { type: "string" as const },
+    relative: { type: "string" as const },
+    full: { type: "string" as const },
+  },
+  additionalProperties: true,
+};
+
+export const timeStatsSchema = {
+  type: "object" as const,
+  properties: {
+    timeEstimate: { type: "number" as const },
+    totalTimeSpent: { type: "number" as const },
+    humanTimeEstimate: { type: "string" as const },
+    humanTotalTimeSpent: { type: "string" as const },
+  },
+  additionalProperties: true,
+};
+
+export const taskCompletionStatusSchema = {
+  type: "object" as const,
+  properties: {
+    count: { type: "number" as const },
+    completedCount: { type: "number" as const },
+  },
+  additionalProperties: true,
+};
