@@ -4,7 +4,7 @@ import { convertKeysToCamelCase } from "./convertKeysToCamelCase.ts";
 
 interface GitLabBlockInputConfigParams extends Pick<
   AppBlockConfigField,
-  "name" | "description" | "type" | "required"
+  "name" | "description" | "type" | "required" | "suggestValues"
 > {
   apiRequestFieldKey?: string;
 }
@@ -56,6 +56,7 @@ function mapInputConfig(
         description: value.description,
         type: value.type,
         required: value.required,
+        ...(value.suggestValues ? { suggestValues: value.suggestValues } : {}),
       },
     ]),
   );

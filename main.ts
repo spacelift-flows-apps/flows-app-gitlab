@@ -3,8 +3,7 @@ import { randomBytes, timingSafeEqual } from "node:crypto";
 import { createGitLabClient } from "./client";
 import { json, error } from "./request.ts";
 
-import { webhookSubscription } from "./blocks/webhooks/webhookSubscription.ts";
-import { httpRequest } from "./blocks/request/httpRequest.ts";
+import { blocks as appBlocks } from "./blocks/index.ts";
 
 async function getOrCreateWebhookSecret(): Promise<string> {
   const { value: existing } = await kv.app.get("webhookSecret");
@@ -80,10 +79,7 @@ To install:
 3. Choose the access token scope (project, group, or system) and provide the project/group path if applicable
 4. The webhook will be created automatically during setup`,
 
-  blocks: {
-    webhookSubscription,
-    httpRequest,
-  },
+  blocks: appBlocks,
 
   config: {
     instanceUrl: {
