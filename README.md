@@ -23,7 +23,7 @@ or a Group Access Token.
 Configuration fields:
 
 | Field                 | Required                 | Description                                               |
-|-----------------------|--------------------------|-----------------------------------------------------------|
+| --------------------- | ------------------------ | --------------------------------------------------------- |
 | Instance URL          | No                       | Defaults to `https://gitlab.com`                          |
 | Access Token          | Yes                      | Token with `api` scope                                    |
 | Access Token Scope    | Yes                      | `project`, `group`, or `system`                           |
