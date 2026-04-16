@@ -6,6 +6,7 @@ import { noteSubscription } from "./webhooks/noteSubscription.ts";
 import { pipelineSubscription } from "./webhooks/pipelineSubscription.ts";
 
 import { httpRequest } from "./request/httpRequest.ts";
+import { graphqlRequest } from "./request/graphqlRequest.ts";
 
 import { listIssues } from "./issues/listIssues.ts";
 import { getIssue } from "./issues/getIssue.ts";
@@ -48,6 +49,7 @@ export const blocks = {
   pipelineSubscription,
 
   httpRequest,
+  graphqlRequest,
 
   listIssues,
   getIssue,
