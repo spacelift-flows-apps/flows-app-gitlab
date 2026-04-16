@@ -28,6 +28,11 @@ import { getFileContents } from "./contents/getFileContents.ts";
 import { createOrUpdateFile } from "./contents/createOrUpdateFile.ts";
 import { deleteFile } from "./contents/deleteFile.ts";
 
+import { listPipelines } from "./pipelines/listPipelines.ts";
+import { getPipeline } from "./pipelines/getPipeline.ts";
+import { triggerPipeline } from "./pipelines/triggerPipeline.ts";
+import { retryPipeline } from "./pipelines/retryPipeline.ts";
+
 export const blocks = {
   webhookSubscription,
   httpRequest,
@@ -58,4 +63,9 @@ export const blocks = {
   getFileContents,
   createOrUpdateFile,
   deleteFile,
+
+  listPipelines,
+  getPipeline,
+  triggerPipeline,
+  retryPipeline,
 } as const;
