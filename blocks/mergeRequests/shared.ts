@@ -11,6 +11,7 @@ import {
   referencesSchema,
   timeStatsSchema,
   taskCompletionStatusSchema,
+  pipelineSchema,
 } from "../shared.ts";
 
 export const title = defineGitLabInputConfig({
@@ -146,18 +147,7 @@ export const mergeRequestSchema = {
     subscribed: { type: "boolean" as const },
     taskCompletionStatus: taskCompletionStatusSchema,
     timeStats: timeStatsSchema,
-    pipeline: {
-      type: "object" as const,
-      properties: {
-        id: { type: "number" as const },
-        iid: { type: "number" as const },
-        sha: { type: "string" as const },
-        ref: { type: "string" as const },
-        status: { type: "string" as const },
-        webUrl: { type: "string" as const },
-      },
-      additionalProperties: true,
-    },
+    pipeline: pipelineSchema,
   },
   required: [
     "id",

@@ -18,6 +18,12 @@ import { getMergeRequestChanges } from "./mergeRequests/getMergeRequestChanges.t
 import { createMergeRequestNote } from "./mergeRequests/createMergeRequestNote.ts";
 import { approveMergeRequest } from "./mergeRequests/approveMergeRequest.ts";
 
+import { listBranches } from "./branches/listBranches.ts";
+import { createBranch } from "./branches/createBranch.ts";
+
+import { getCommit } from "./commits/getCommit.ts";
+import { listCommits } from "./commits/listCommits.ts";
+
 export const blocks = {
   webhookSubscription,
   httpRequest,
@@ -38,4 +44,10 @@ export const blocks = {
   getMergeRequestChanges,
   createMergeRequestNote,
   approveMergeRequest,
+
+  listBranches,
+  createBranch,
+
+  getCommit,
+  listCommits,
 } as const;

@@ -175,6 +175,48 @@ export const timeStatsSchema = {
   additionalProperties: true,
 };
 
+export const commitSchema = {
+  type: "object" as const,
+  properties: {
+    id: { type: "string" as const },
+    shortId: { type: "string" as const },
+    title: { type: "string" as const },
+    message: { type: "string" as const },
+    authorName: { type: "string" as const },
+    authorEmail: { type: "string" as const },
+    authoredDate: { type: "string" as const },
+    committerName: { type: "string" as const },
+    committerEmail: { type: "string" as const },
+    committedDate: { type: "string" as const },
+    createdAt: { type: "string" as const },
+    parentIds: {
+      type: "array" as const,
+      items: { type: "string" as const },
+    },
+    webUrl: { type: "string" as const },
+  },
+  required: ["id", "shortId", "title", "message", "authorName", "createdAt"],
+  additionalProperties: true,
+};
+
+export const pipelineSchema = {
+  type: "object" as const,
+  properties: {
+    id: { type: "number" as const },
+    iid: { type: "number" as const },
+    projectId: { type: "number" as const },
+    sha: { type: "string" as const },
+    ref: { type: "string" as const },
+    status: { type: "string" as const },
+    source: { type: "string" as const },
+    createdAt: { type: "string" as const },
+    updatedAt: { type: "string" as const },
+    webUrl: { type: "string" as const },
+  },
+  required: ["id", "status", "ref", "sha"],
+  additionalProperties: true,
+};
+
 export const taskCompletionStatusSchema = {
   type: "object" as const,
   properties: {
