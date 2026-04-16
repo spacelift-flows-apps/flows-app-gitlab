@@ -24,6 +24,10 @@ import { createBranch } from "./branches/createBranch.ts";
 import { getCommit } from "./commits/getCommit.ts";
 import { listCommits } from "./commits/listCommits.ts";
 
+import { getFileContents } from "./contents/getFileContents.ts";
+import { createOrUpdateFile } from "./contents/createOrUpdateFile.ts";
+import { deleteFile } from "./contents/deleteFile.ts";
+
 export const blocks = {
   webhookSubscription,
   httpRequest,
@@ -50,4 +54,8 @@ export const blocks = {
 
   getCommit,
   listCommits,
+
+  getFileContents,
+  createOrUpdateFile,
+  deleteFile,
 } as const;

@@ -3,6 +3,7 @@ import {
   suggestProjects,
   suggestIssues,
   suggestMergeRequests,
+  suggestBranches,
 } from "../utils/suggestValues.ts";
 
 export const projectId = defineGitLabInputConfig({
@@ -103,6 +104,48 @@ export const labels = defineGitLabInputConfig({
   type: "string",
   required: false,
   apiRequestFieldKey: "labels",
+});
+
+export const branch = defineGitLabInputConfig({
+  name: "Branch",
+  description: "Branch name to operate on",
+  type: "string",
+  required: true,
+  apiRequestFieldKey: "branch",
+  suggestValues: suggestBranches(),
+});
+
+export const ref = defineGitLabInputConfig({
+  name: "Ref",
+  description:
+    "Branch name, tag, or commit SHA (defaults to the default branch)",
+  type: "string",
+  required: false,
+  suggestValues: suggestBranches(),
+});
+
+export const commitMessage = defineGitLabInputConfig({
+  name: "Commit Message",
+  description: "Commit message for the file operation",
+  type: "string",
+  required: true,
+  apiRequestFieldKey: "commit_message",
+});
+
+export const authorName = defineGitLabInputConfig({
+  name: "Author Name",
+  description: "Override the commit author name",
+  type: "string",
+  required: false,
+  apiRequestFieldKey: "author_name",
+});
+
+export const authorEmail = defineGitLabInputConfig({
+  name: "Author Email",
+  description: "Override the commit author email",
+  type: "string",
+  required: false,
+  apiRequestFieldKey: "author_email",
 });
 
 // Shared output schemas
