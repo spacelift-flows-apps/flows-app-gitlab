@@ -1,4 +1,10 @@
 import { webhookSubscription } from "./webhooks/webhookSubscription.ts";
+import { pushSubscription } from "./webhooks/pushSubscription.ts";
+import { issueSubscription } from "./webhooks/issueSubscription.ts";
+import { mergeRequestSubscription } from "./webhooks/mergeRequestSubscription.ts";
+import { noteSubscription } from "./webhooks/noteSubscription.ts";
+import { pipelineSubscription } from "./webhooks/pipelineSubscription.ts";
+
 import { httpRequest } from "./request/httpRequest.ts";
 
 import { listIssues } from "./issues/listIssues.ts";
@@ -35,6 +41,12 @@ import { retryPipeline } from "./pipelines/retryPipeline.ts";
 
 export const blocks = {
   webhookSubscription,
+  pushSubscription,
+  issueSubscription,
+  mergeRequestSubscription,
+  noteSubscription,
+  pipelineSubscription,
+
   httpRequest,
 
   listIssues,

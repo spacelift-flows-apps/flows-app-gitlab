@@ -6,7 +6,7 @@ export const webhookSubscription = defineGitLabBlock({
   name: "On Webhook",
   description:
     "Subscribes to all GitLab webhook events. Use this as an escape hatch to receive any webhook event, including those not covered by dedicated subscription blocks.",
-  category: "Webhooks",
+  category: "Subscriptions",
   entrypoint: true,
   outputJsonSchema: {
     type: "object",

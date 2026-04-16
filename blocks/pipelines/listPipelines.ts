@@ -2,7 +2,15 @@ import {
   defineGitLabBlock,
   defineGitLabInputConfig,
 } from "../../utils/defineGitLabBlock.ts";
-import { projectId, page, perPage, orderBy, sort, ref, pipelineSchema } from "../shared.ts";
+import {
+  projectId,
+  page,
+  perPage,
+  orderBy,
+  sort,
+  ref,
+  pipelineSchema,
+} from "../shared.ts";
 
 const status = defineGitLabInputConfig({
   name: "Status",
