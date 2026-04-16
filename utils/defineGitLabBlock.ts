@@ -7,6 +7,7 @@ interface GitLabBlockInputConfigParams extends Pick<
   "name" | "description" | "type" | "required" | "suggestValues"
 > {
   apiRequestFieldKey?: string;
+  apiRequestTransform?: (value: unknown) => unknown;
 }
 
 export function defineGitLabInputConfig(
@@ -111,7 +112,9 @@ function buildRequestParams(
       // URL-encode path parameters (handles project paths like "group/project")
       path = path.replace(`{${apiKey}}`, encodeURIComponent(String(value)));
     } else if (value !== undefined) {
-      body[apiKey] = value;
+      body[apiKey] = config.apiRequestTransform
+        ? config.apiRequestTransform(value)
+        : value;
     }
   }
 

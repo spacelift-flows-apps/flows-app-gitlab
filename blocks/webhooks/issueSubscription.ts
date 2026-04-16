@@ -81,10 +81,7 @@ export const issueSubscription = defineGitLabBlock({
     }
 
     if (labels) {
-      const filterLabels = (labels as string)
-        .split(",")
-        .map((l: string) => l.trim())
-        .filter(Boolean);
+      const filterLabels = labels as string[];
       if (filterLabels.length > 0) {
         const eventLabels = (payload.labels || []).map(
           (l: { title: string }) => l.title,

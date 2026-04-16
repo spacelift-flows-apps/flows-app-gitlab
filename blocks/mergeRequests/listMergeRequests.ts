@@ -8,7 +8,7 @@ import {
   orderBy,
   sort,
 } from "../shared.ts";
-import { suggestLabels, mergeRequestListSchema } from "./shared.ts";
+import { mergeRequestListSchema } from "./shared.ts";
 
 export const listMergeRequests = defineGitLabBlock({
   name: "List Merge Requests",
@@ -18,7 +18,7 @@ export const listMergeRequests = defineGitLabBlock({
   inputConfig: {
     projectId,
     stateFilterMr,
-    labels: { ...labels, suggestValues: suggestLabels() },
+    labels,
     orderBy,
     sort,
     page,

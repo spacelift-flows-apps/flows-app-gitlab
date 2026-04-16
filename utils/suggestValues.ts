@@ -11,23 +11,6 @@ function getClient(config: AppConfig) {
   return createGitLabClient(config);
 }
 
-export const fetchLabels = memoizee(
-  async (config: AppConfig, projectId: string) => {
-    const client = getClient(config);
-    const { data } = await client.get<Array<{ name: string; color: string }>>(
-      `/projects/${encodeURIComponent(projectId)}/labels`,
-      { per_page: "100" },
-    );
-    return data;
-  },
-  {
-    maxAge: 60000,
-    promise: true,
-    length: 2,
-    normalizer: (args) => `${args[0].instanceUrl}:${args[1]}`,
-  },
-);
-
 export const fetchMilestones = memoizee(
   async (config: AppConfig, projectId: string) => {
     const client = getClient(config);
@@ -35,24 +18,6 @@ export const fetchMilestones = memoizee(
       Array<{ id: number; title: string; description: string }>
     >(`/projects/${encodeURIComponent(projectId)}/milestones`, {
       state: "active",
-      per_page: "100",
-    });
-    return data;
-  },
-  {
-    maxAge: 60000,
-    promise: true,
-    length: 2,
-    normalizer: (args) => `${args[0].instanceUrl}:${args[1]}`,
-  },
-);
-
-export const fetchMembers = memoizee(
-  async (config: AppConfig, projectId: string) => {
-    const client = getClient(config);
-    const { data } = await client.get<
-      Array<{ id: number; username: string; name: string }>
-    >(`/projects/${encodeURIComponent(projectId)}/members/all`, {
       per_page: "100",
     });
     return data;
@@ -255,24 +220,6 @@ function filterBySearch<T extends { label: string }>(
   return values.filter((v) => v.label.toLowerCase().includes(lower));
 }
 
-export function suggestLabels(requireProjectId = true) {
-  return async (input: any) => {
-    const projectId = input.staticInputConfig?.projectId as string | undefined;
-    if (!projectId && requireProjectId) {
-      return {
-        suggestedValues: [],
-        message: "Configure Project ID to receive label suggestions.",
-      };
-    }
-    if (!projectId) return { suggestedValues: [] };
-    const data = await fetchLabels(input.app.config as AppConfig, projectId);
-    const values = data.map((l) => ({ label: l.name, value: l.name }));
-    return {
-      suggestedValues: filterBySearch(values, input.searchPhrase).slice(0, 50),
-    };
-  };
-}
-
 export function suggestMilestones() {
   return async (input: any) => {
     const projectId = input.staticInputConfig?.projectId as string | undefined;
@@ -290,26 +237,6 @@ export function suggestMilestones() {
       label: m.title,
       value: m.id.toString(),
       description: m.description,
-    }));
-    return {
-      suggestedValues: filterBySearch(values, input.searchPhrase).slice(0, 50),
-    };
-  };
-}
-
-export function suggestMembers() {
-  return async (input: any) => {
-    const projectId = input.staticInputConfig?.projectId as string | undefined;
-    if (!projectId) {
-      return {
-        suggestedValues: [],
-        message: "Configure Project ID to receive member suggestions.",
-      };
-    }
-    const data = await fetchMembers(input.app.config as AppConfig, projectId);
-    const values = data.map((m) => ({
-      label: `${m.name} (${m.username})`,
-      value: m.id.toString(),
     }));
     return {
       suggestedValues: filterBySearch(values, input.searchPhrase).slice(0, 50),

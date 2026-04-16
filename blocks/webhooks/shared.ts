@@ -14,8 +14,8 @@ export const project = defineGitLabBlockConfig({
 export const labels = defineGitLabBlockConfig({
   name: "Labels",
   description:
-    "Comma-separated label names to filter by. Matches if the event's resource has any of these labels.",
-  type: "string",
+    "Label names to filter by. Matches if the event's resource has any of these labels.",
+  type: { type: "array", items: { type: "string" } },
   required: false,
 });
 

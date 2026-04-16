@@ -1,8 +1,6 @@
 import { defineGitLabInputConfig } from "../../utils/defineGitLabBlock.ts";
 import {
-  suggestLabels,
   suggestMilestones,
-  suggestMembers,
   suggestBranches,
 } from "../../utils/suggestValues.ts";
 import {
@@ -50,20 +48,18 @@ export const targetBranch = defineGitLabInputConfig({
 
 export const assigneeIds = defineGitLabInputConfig({
   name: "Assignee IDs",
-  description: "Comma-separated user IDs to assign",
-  type: "string",
+  description: "User IDs to assign",
+  type: { type: "array", items: { type: "number" } },
   required: false,
   apiRequestFieldKey: "assignee_ids",
-  suggestValues: suggestMembers(),
 });
 
 export const reviewerIds = defineGitLabInputConfig({
   name: "Reviewer IDs",
-  description: "Comma-separated user IDs to set as reviewers",
-  type: "string",
+  description: "User IDs to set as reviewers",
+  type: { type: "array", items: { type: "number" } },
   required: false,
   apiRequestFieldKey: "reviewer_ids",
-  suggestValues: suggestMembers(),
 });
 
 export const milestoneId = defineGitLabInputConfig({
@@ -91,7 +87,7 @@ export const noteBody = defineGitLabInputConfig({
   apiRequestFieldKey: "body",
 });
 
-export { suggestLabels, suggestMembers, suggestBranches };
+export { suggestBranches };
 
 export const mergeRequestSchema = {
   type: "object" as const,

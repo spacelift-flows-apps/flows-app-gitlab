@@ -7,7 +7,6 @@ import {
   assigneeIds,
   reviewerIds,
   milestoneId,
-  suggestLabels,
   mergeRequestSchema,
 } from "./shared.ts";
 
@@ -22,7 +21,7 @@ export const updateMergeRequest = defineGitLabBlock({
     title: { ...title, required: false },
     description,
     stateEvent,
-    labels: { ...labels, suggestValues: suggestLabels() },
+    labels,
     assigneeIds,
     reviewerIds,
     milestoneId,

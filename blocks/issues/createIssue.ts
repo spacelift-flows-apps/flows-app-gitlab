@@ -5,9 +5,7 @@ import {
   description,
   assigneeIds,
   milestoneId,
-  suggestLabels,
   suggestMilestones,
-  suggestMembers,
   issueSchema,
 } from "./shared.ts";
 
@@ -20,8 +18,8 @@ export const createIssue = defineGitLabBlock({
     projectId,
     title,
     description,
-    labels: { ...labels, suggestValues: suggestLabels() },
-    assigneeIds: { ...assigneeIds, suggestValues: suggestMembers() },
+    labels,
+    assigneeIds,
     milestoneId: { ...milestoneId, suggestValues: suggestMilestones() },
   },
   outputJsonSchema: issueSchema,

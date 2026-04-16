@@ -100,10 +100,11 @@ export const sort = defineGitLabInputConfig({
 
 export const labels = defineGitLabInputConfig({
   name: "Labels",
-  description: "Comma-separated label names",
-  type: "string",
+  description: "Label names",
+  type: { type: "array", items: { type: "string" } },
   required: false,
   apiRequestFieldKey: "labels",
+  apiRequestTransform: (value: unknown) => (value as string[]).join(","),
 });
 
 export const branch = defineGitLabInputConfig({

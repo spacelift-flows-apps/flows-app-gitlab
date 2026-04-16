@@ -8,7 +8,7 @@ import {
   orderBy,
   sort,
 } from "../shared.ts";
-import { suggestLabels, issueListSchema } from "./shared.ts";
+import { issueListSchema } from "./shared.ts";
 
 export const listIssues = defineGitLabBlock({
   name: "List Issues",
@@ -18,7 +18,7 @@ export const listIssues = defineGitLabBlock({
   inputConfig: {
     projectId,
     stateFilter,
-    labels: { ...labels, suggestValues: suggestLabels() },
+    labels,
     orderBy,
     sort,
     page,
