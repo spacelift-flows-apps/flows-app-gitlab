@@ -30,6 +30,25 @@ export const fetchMilestones = memoizee(
   },
 );
 
+export async function resolveUsernamesToIds(
+  appConfig: Record<string, unknown>,
+  usernames: string[],
+): Promise<number[]> {
+  if (usernames.length === 0) return [];
+  const client = getClient(appConfig as unknown as AppConfig);
+  return Promise.all(
+    usernames.map(async (username) => {
+      const { data } = await client.get<Array<{ id: number }>>(`/users`, {
+        username,
+      });
+      if (data.length === 0) {
+        throw new Error(`Unknown username: "${username}"`);
+      }
+      return data[0].id;
+    }),
+  );
+}
+
 export const fetchBranches = memoizee(
   async (config: AppConfig, projectId: string) => {
     const client = getClient(config);

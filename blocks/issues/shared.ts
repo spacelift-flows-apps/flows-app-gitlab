@@ -1,5 +1,8 @@
 import { defineGitLabInputConfig } from "../../utils/defineGitLabBlock.ts";
-import { suggestMilestones } from "../../utils/suggestValues.ts";
+import {
+  suggestMilestones,
+  resolveUsernamesToIds,
+} from "../../utils/suggestValues.ts";
 import {
   userSchema,
   milestoneSchema,
@@ -32,12 +35,14 @@ export const noteBody = defineGitLabInputConfig({
   apiRequestFieldKey: "body",
 });
 
-export const assigneeIds = defineGitLabInputConfig({
-  name: "Assignee IDs",
-  description: "User IDs to assign",
-  type: { type: "array", items: { type: "number" } },
+export const assignees = defineGitLabInputConfig({
+  name: "Assignees",
+  description: "Usernames to assign",
+  type: { type: "array", items: { type: "string" } },
   required: false,
   apiRequestFieldKey: "assignee_ids",
+  apiRequestTransform: (value, { appConfig }) =>
+    resolveUsernamesToIds(appConfig, value as string[]),
 });
 
 export const milestoneId = defineGitLabInputConfig({

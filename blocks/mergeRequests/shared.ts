@@ -2,6 +2,7 @@ import { defineGitLabInputConfig } from "../../utils/defineGitLabBlock.ts";
 import {
   suggestMilestones,
   suggestBranches,
+  resolveUsernamesToIds,
 } from "../../utils/suggestValues.ts";
 import {
   userSchema,
@@ -46,20 +47,24 @@ export const targetBranch = defineGitLabInputConfig({
   suggestValues: suggestBranches(),
 });
 
-export const assigneeIds = defineGitLabInputConfig({
-  name: "Assignee IDs",
-  description: "User IDs to assign",
-  type: { type: "array", items: { type: "number" } },
+export const assignees = defineGitLabInputConfig({
+  name: "Assignees",
+  description: "Usernames to assign",
+  type: { type: "array", items: { type: "string" } },
   required: false,
   apiRequestFieldKey: "assignee_ids",
+  apiRequestTransform: (value, { appConfig }) =>
+    resolveUsernamesToIds(appConfig, value as string[]),
 });
 
-export const reviewerIds = defineGitLabInputConfig({
-  name: "Reviewer IDs",
-  description: "User IDs to set as reviewers",
-  type: { type: "array", items: { type: "number" } },
+export const reviewers = defineGitLabInputConfig({
+  name: "Reviewers",
+  description: "Usernames to set as reviewers",
+  type: { type: "array", items: { type: "string" } },
   required: false,
   apiRequestFieldKey: "reviewer_ids",
+  apiRequestTransform: (value, { appConfig }) =>
+    resolveUsernamesToIds(appConfig, value as string[]),
 });
 
 export const milestoneId = defineGitLabInputConfig({

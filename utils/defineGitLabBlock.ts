@@ -2,12 +2,20 @@ import { AppBlock, AppBlockConfigField, events } from "@slflows/sdk/v1";
 import { createGitLabClient } from "../client";
 import { convertKeysToCamelCase } from "./convertKeysToCamelCase.ts";
 
+interface TransformContext {
+  appConfig: Record<string, unknown>;
+  inputValues: Record<string, unknown>;
+}
+
 interface GitLabBlockInputConfigParams extends Pick<
   AppBlockConfigField,
   "name" | "description" | "type" | "required" | "suggestValues"
 > {
   apiRequestFieldKey?: string;
-  apiRequestTransform?: (value: unknown) => unknown;
+  apiRequestTransform?: (
+    value: unknown,
+    context: TransformContext,
+  ) => unknown | Promise<unknown>;
 }
 
 export function defineGitLabInputConfig(
@@ -87,13 +95,18 @@ type GitLabBlockParams = {
     }
 );
 
-function buildRequestParams(
+async function buildRequestParams(
   url: string,
   inputConfig: Record<string, GitLabBlockInputConfigParams>,
   eventInputConfig: Record<string, unknown>,
-): { method: string; path: string; body: Record<string, unknown> } {
+  appConfig: Record<string, unknown>,
+): Promise<{ method: string; path: string; body: Record<string, unknown> }> {
   const [method, pathTemplate] = url.split(" ", 2);
   const body: Record<string, unknown> = {};
+  const transformContext: TransformContext = {
+    appConfig,
+    inputValues: eventInputConfig,
+  };
 
   // Extract path parameter names from the template
   const pathParamNames = new Set<string>();
@@ -113,7 +126,7 @@ function buildRequestParams(
       path = path.replace(`{${apiKey}}`, encodeURIComponent(String(value)));
     } else if (value !== undefined) {
       body[apiKey] = config.apiRequestTransform
-        ? config.apiRequestTransform(value)
+        ? await config.apiRequestTransform(value, transformContext)
         : value;
     }
   }
@@ -153,10 +166,11 @@ export function defineGitLabBlock(params: GitLabBlockParams): AppBlock {
                         },
                       );
 
-                      const { method, path, body } = buildRequestParams(
+                      const { method, path, body } = await buildRequestParams(
                         (params as { url: string }).url,
                         params.inputConfig!,
                         event.inputConfig,
+                        app.config as Record<string, unknown>,
                       );
 
                       const hasBody =
