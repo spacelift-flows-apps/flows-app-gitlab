@@ -18,7 +18,7 @@ const method = defineGitLabInputConfig({
 const path = defineGitLabInputConfig({
   name: "Path",
   description:
-    'The API path relative to the instance URL (e.g., "/api/v4/projects/123/issues" or "/api/graphql")',
+    'The API path relative to the instance URL (e.g., "/api/v4/projects/123/issues")',
   type: "string",
   required: true,
 });

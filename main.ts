@@ -3,8 +3,89 @@ import { randomBytes, timingSafeEqual } from "node:crypto";
 import { createGitLabClient } from "./client";
 import { json, error } from "./request.ts";
 
-import { webhookSubscription } from "./blocks/webhooks/webhookSubscription.ts";
-import { httpRequest } from "./blocks/request/httpRequest.ts";
+import { blocks as appBlocks } from "./blocks/index.ts";
+
+// Maps X-Gitlab-Event header values to specific subscription block typeIds.
+// Each event is routed to both the generic webhookSubscription (catchall)
+// AND the matching event-specific subscription block.
+type SupportedEventType =
+  | "Push Hook"
+  | "Tag Push Hook"
+  | "Issue Hook"
+  | "Confidential Issue Hook"
+  | "Merge Request Hook"
+  | "Note Hook"
+  | "Confidential Note Hook"
+  | "Pipeline Hook";
+
+interface EventConfig {
+  blockTypeId: string;
+  validate: (payload: unknown) => boolean;
+}
+
+const EVENT_CONFIG: Record<SupportedEventType, EventConfig> = {
+  "Push Hook": {
+    blockTypeId: "pushSubscription",
+    validate: (payload: unknown) =>
+      !!payload &&
+      typeof payload === "object" &&
+      "ref" in payload &&
+      "commits" in payload,
+  },
+  "Tag Push Hook": {
+    blockTypeId: "pushSubscription",
+    validate: (payload: unknown) =>
+      !!payload && typeof payload === "object" && "ref" in payload,
+  },
+  "Issue Hook": {
+    blockTypeId: "issueSubscription",
+    validate: (payload: unknown) =>
+      !!payload &&
+      typeof payload === "object" &&
+      "object_attributes" in payload &&
+      (payload as any).object_kind === "issue",
+  },
+  "Confidential Issue Hook": {
+    blockTypeId: "issueSubscription",
+    validate: (payload: unknown) =>
+      !!payload &&
+      typeof payload === "object" &&
+      "object_attributes" in payload &&
+      (payload as any).object_kind === "issue",
+  },
+  "Merge Request Hook": {
+    blockTypeId: "mergeRequestSubscription",
+    validate: (payload: unknown) =>
+      !!payload &&
+      typeof payload === "object" &&
+      "object_attributes" in payload &&
+      (payload as any).object_kind === "merge_request",
+  },
+  "Note Hook": {
+    blockTypeId: "noteSubscription",
+    validate: (payload: unknown) =>
+      !!payload &&
+      typeof payload === "object" &&
+      "object_attributes" in payload &&
+      (payload as any).object_kind === "note",
+  },
+  "Confidential Note Hook": {
+    blockTypeId: "noteSubscription",
+    validate: (payload: unknown) =>
+      !!payload &&
+      typeof payload === "object" &&
+      "object_attributes" in payload &&
+      (payload as any).object_kind === "note",
+  },
+  "Pipeline Hook": {
+    blockTypeId: "pipelineSubscription",
+    validate: (payload: unknown) =>
+      !!payload &&
+      typeof payload === "object" &&
+      "object_attributes" in payload &&
+      (payload as any).object_kind === "pipeline",
+  },
+};
 
 async function getOrCreateWebhookSecret(): Promise<string> {
   const { value: existing } = await kv.app.get("webhookSecret");
@@ -80,10 +161,7 @@ To install:
 3. Choose the access token scope (project, group, or system) and provide the project/group path if applicable
 4. The webhook will be created automatically during setup`,
 
-  blocks: {
-    webhookSubscription,
-    httpRequest,
-  },
+  blocks: appBlocks,
 
   config: {
     instanceUrl: {
@@ -172,13 +250,31 @@ To install:
 
           const payload = request.body;
 
-          const listOutput = await blocksApi.list({
+          // Always notify the generic catchall webhook subscription blocks
+          const genericListOutput = await blocksApi.list({
             typeIds: ["webhookSubscription"],
           });
+          const genericBlockIds = genericListOutput.blocks.map(
+            (block) => block.id,
+          );
 
-          const blockIds = listOutput.blocks.map((block) => block.id);
+          // Also notify event-specific subscription blocks if the event type is supported
+          let specificBlockIds: string[] = [];
+          if (eventType in EVENT_CONFIG) {
+            const config = EVENT_CONFIG[eventType as SupportedEventType];
+            if (config.validate(payload)) {
+              const specificListOutput = await blocksApi.list({
+                typeIds: [config.blockTypeId],
+              });
+              specificBlockIds = specificListOutput.blocks.map(
+                (block) => block.id,
+              );
+            }
+          }
 
-          if (blockIds.length === 0) {
+          const allBlockIds = [...specificBlockIds, ...genericBlockIds];
+
+          if (allBlockIds.length === 0) {
             return json(request.requestId, {
               message: "No subscription blocks found",
               eventType,
@@ -191,13 +287,13 @@ To install:
               payload,
               eventType,
             },
-            blockIds,
+            blockIds: allBlockIds,
           });
 
           return json(request.requestId, {
             message: "ok",
             eventType,
-            blocksNotified: blockIds.length,
+            blocksNotified: allBlockIds.length,
           });
         }
       }
