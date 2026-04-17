@@ -33,16 +33,11 @@ export const fetchMilestones = memoizee(
 export const fetchBranches = memoizee(
   async (config: AppConfig, projectId: string) => {
     const client = getClient(config);
-    const { data } = await client.get<
-      Array<{ name: string; commit: { committed_date: string } }>
-    >(`/projects/${encodeURIComponent(projectId)}/repository/branches`, {
-      per_page: "100",
-    });
-    return data.sort(
-      (a, b) =>
-        new Date(b.commit.committed_date).getTime() -
-        new Date(a.commit.committed_date).getTime(),
+    const { data } = await client.get<Array<{ name: string }>>(
+      `/projects/${encodeURIComponent(projectId)}/repository/branches`,
+      { per_page: "100", sort: "updated_desc" },
     );
+    return data;
   },
   {
     maxAge: 60000,
